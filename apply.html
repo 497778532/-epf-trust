@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>揭阳市公共资源土地与矿业权委托系统</title>
+  <base id="basePath" href="${basePath}">
+  <link rel="stylesheet" href="${basePath}/oa/workflow/css/element.css" />
+  <link rel="stylesheet" href="${basePath}/oa/workflow/css/index.css" />
+
+  <script src="${basePath}/oa/workflow/js/browser.min.js"></script>
+  <script src="${basePath}/oa/workflow/js/polyfill.min.js"></script>
+
+  <style>
+    [v-cloak] {
+      display: none;
+      font-size: 16px
+    }
+    
+  </style>
+</head>
+
+<body>
+
+  <div id="app" ref="box">
+
+
+
+
+    <div class="main" v-cloak v-loading="load">
+
+
+
+      <div class="info-people">
+        <div class="info-peple-title">
+          委托人基本信息
+        </div>
+        <input type="hidden" id="curUserName" value="${userName!}" />
+        <el-form ref="formFirst" :model="formFirst" label-width="auto" class="rule-form" label-position="top"
+          :rules="formrules" :disabled="isDetail" :validate-on-rule-change="false">
+
+          <div class="rule-form-item">
+            <div>
+              <!-- <div>委托人单位名称</div> -->
+              <div class="province-city">
+                <el-form-item label="委托人单位名称" prop="ownershipName">
+                  <el-input v-model="formFirst.ownershipName" placeholder="委托人单位名称"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+
+
+            <div>
+              <!-- <div>委托法定代表人</div> -->
+              <div class="province-city">
+                <el-form-item label="委托法定代表人" prop="consignerCorporation">
+                  <el-input placeholder="请输入委托法定代表人" v-model="formFirst.consignerCorporation"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+            <div>
+              <!-- <div>委托人单位性质</div> -->
+              <div class="province-city">
+                <el-form-item label="委托人单位性质" prop="ownershipType">
+                  <el-select v-model="formFirst.ownershipType" placeholder="请选择委托人单位性质">
+                    <el-option v-for="type in ownershipType" :key="type.zhCn" :label="type.zhCn" :value="type.zhCn">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div style="width:100%">
+
+              <!-- <div>委托单位地址</div> -->
+              <div class="province-city">
+                <el-form-item label="委托单位地址" prop="consignerAddress">
+                  <el-input v-model="formFirst.consignerAddress" placeholder="请输入委托单位地址"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+          <div class="rule-form-item">
+
+
+            <div>
+              <!-- <div>代理人名称</div> -->
+              <div class="province-city">
+                <el-form-item label="代理人名称" prop="consignerHandlerName">
+                  <el-input v-model="formFirst.consignerHandlerName" placeholder="请输入代理人名称"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+            <div>
+              <!-- <div>代理人身份证号码</div> -->
+
+
+              <div class="province-city">
+                <el-form-item label="代理人身份证号码" prop="consignerHandlerNo">
+                  <el-input v-model="formFirst.consignerHandlerNo" placeholder="请输入代理人身份证号码"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+            <div>
+
+              <!-- <div>代理人联系电话</div> -->
+              <div class="province-city">
+                <el-form-item label="代理人联系电话" prop="consignerHandlerPhone">
+                  <el-input v-model="formFirst.consignerHandlerPhone" placeholder="请输入代理人联系电话"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-form-item">
+            <div>
+              <!-- <div>数字证书编号</div> -->
+              <div class="province-city">
+                <el-form-item label="数字证书编号" prop="consignerHandlerCertificate">
+                  <el-input v-model="formFirst.consignerHandlerCertificate" placeholder="请输入数字证书编号"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+            <div>
+              <!-- <div>电子邮箱</div> -->
+              <div class="province-city">
+                <el-form-item label="电子邮箱" prop="consignerHandlerEmail">
+                  <el-input v-model="formFirst.consignerHandlerEmail" placeholder="请输入电子邮箱"></el-input>
+                </el-form-item>
+              </div>
+            </div>
+            <div>
+            </div>
+
+          </div>
+        </el-form>
+      </div>
+
+      <div class="info-people" style="margin-top:16px;page-break-after:always">
+        <div class="info-peple-title" style="display:flex;justify-content:space-between">
+          <span>标的物件信息</span>
+          <div class="button blue margin-Ri" @click="addLand">
+            添加标的
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+        <el-collapse v-model="activeNames">
+          <div v-for="(land,landIndex) in lands">
+            <el-collapse-item :name="landIndex">
+              <template slot="title">
+                <div style="padding: 12px 24px;justify-content:space-between;width:100%;display:flex"
+                  :ref="'title'+landIndex">
+
+                  <el-button type="info" plain>标的{{landIndex+1}}</el-button>
+
+                  <el-button type="danger" plain @click="deleteLand(landIndex)" v-if="landIndex!==0">删除</el-button>
+                </div>
+
+              </template>
+              <el-form :ref="'land'+landIndex" :model="land" label-width="auto" class="rule-form" :rules="formrules"
+                label-position="top" :disabled="isDetail">
+
+                <div class="rule-form-item">
+
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="交易方式" prop="transType">
+                        <el-select v-model="land.transType" placeholder="请选择交易方式">
+                          <el-option v-for="type in transType" :key="type.zhCn" :label="type.zhCn"
+                            :value="type.dictValue">
+                          </el-option>
+                        </el-select>
+                        </el-select>
+                      </el-form-item>
+                    </div>
+                  </div>
+                  <div>
+                    <!-- <div>交易方式</div> -->
+                    <div class="province-city">
+                      <el-form-item label="交易类型" prop="businessType">
+                        <el-select v-model="land.businessType" placeholder="请选择交易类型">
+                          <el-option v-for="type in businessType" :key="type.zhCn" :label="type.zhCn"
+                            :value="type.dictValue">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="所属区域" prop="cantnoId">
+                        <el-select v-model="land.cantnoId" placeholder="请选择区域">
+                          <el-option v-for="type in cantnoId" :key="type.zhCn" :label="type.zhCn"
+                            :value="type.dictValue">
+                          </el-option>
+                        </el-select>
+                        </el-select>
+                      </el-form-item>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rule-form-item">
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="是否允许联合竞买">
+                        <el-switch v-model="land.allowUninName" active-text="否" inactive-text="是" active-color="#307ECC">
+                        </el-switch>
+                      </el-form-item>
+                    </div>
+                  </div>
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="允许自然人参与">
+                        <el-switch v-model="land.allowNatutalName" active-text="否" inactive-text="是" active-color="#307ECC">
+                        </el-switch>
+                      </el-form-item>
+                    </div>
+                  </div>
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="资格审核方式" prop="isAfterCheck">
+                        <el-radio-group v-model="land.isAfterCheck">
+                          <el-radio :label="0">交易前审核</el-radio>
+                          <el-radio :label="1">交易后审核</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="rule-form-item">
+
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="保证金（万元）" prop="earnestMoney" placeholder="请输入保证金">
+                        <el-input v-model="land.earnestMoney"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+                  <div>
+
+                    <div class="province-city">
+
+                      <el-form-item label="底价" placeholder="请输入底价">
+                        <el-input v-model="land.reservePrice" :disabled="true"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="批准文件编号">
+                        <el-input v-model="land.redContentNo" ></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rule-form-item">
+
+                  <div>
+
+                    <div class="province-city">
+                      <el-form-item label="绑定方案" prop="bindCase">
+                        <el-radio-group v-model="land.bindCase" @change="bindCaseChange">
+                          <el-radio :label="1">一宗地一公告</el-radio>
+                          <el-radio :label="2">多宗地一公告</el-radio>
+                          <el-radio :label="9">多宗地组合</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-if="land.bindCase===9">
+
+                    <div class="province-city">
+                      <el-form-item label="规划单元组合" prop="groupName">
+                        <el-input v-model="land.groupName" placeholder="请输入规划单元组合"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+
+
+                  <div v-if="land.transType==1||land.transType==0">
+
+                    <div class="province-city">
+                      <el-form-item label="挂牌起始价（万元）" prop="beginPrice" placeholder="请输入挂牌起始价">
+                        <el-input v-model="land.beginPrice"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-if="land.transType==1||land.transType==0">
+
+                    <div class="province-city">
+                      <el-form-item label="增幅价格（万元）" prop="priceStep" placeholder="请输入增幅价格">
+                        <el-input v-model="land.priceStep"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-if="land.transType==1||land.transType==0">
+                    <div class="province-city">
+                      <el-form-item label="批准机构" prop="checkName">
+                        <el-input v-model="land.checkName" placeholder="请输入批准机构"></el-input>
+                      </el-form-item>
+                    </div>
+
+                  </div>
+
+                  <div v-if="land.transType==2">
+                    <!-- <div>地价起始价（万元）</div> -->
+                    <div class="province-city">
+                      <el-form-item label="地价起始价（万元）" prop="beginPrice">
+                        <el-input v-model="land.beginPrice"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-if="land.transType==2">
+
+                    <div class="province-city">
+                      <el-form-item label="地价封顶价（万元）" prop="finalPrice">
+                        <el-input v-model="land.finalPrice"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+
+
+
+                  <div v-if="land.transType==2">
+                    <!-- <div>最高销售单价（万元）</div> -->
+                    <div class="province-city">
+                      <el-form-item label="最高销售单价（元）" prop="salMaxPrice">
+                        <el-input v-model="land.salMaxPrice" placeholder="请输入最高销售单价"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+                  <div v-if="land.transType==2">
+                    <!-- <div>增幅价格（万元）</div> -->
+                    <div class="province-city">
+                      <el-form-item label="增幅价格（万元）" prop="priceStep">
+                        <el-input v-model="land.priceStep"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-if="land.transType==2">
+                    <!-- <div>最低销售单价（元）</div> -->
+                    <div class="province-city">
+                      <el-form-item label="最低销售单价（元）" prop="salReservePrice">
+                        <el-input v-model="land.salReservePrice" placeholder="请输入最低销售单价"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+
+                  <div v-if="land.transType==2">
+                    <!-- <div>优惠幅度（元）</div> -->
+                    <div class="province-city">
+                      <el-form-item label="优惠幅度（元）" prop="disPriceStep">
+                        <el-input v-model="land.disPriceStep"></el-input>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-if="land.transType==2">
+
+
+                    <div class="province-city">
+                      <el-form-item label="房屋面积（平方米）" prop="houseArea">
+                        <el-input v-model="land.houseArea" placeholder="请输入房屋面积"></el-input>
+                      </el-form-item>
+                    </div>
+
+                  </div>
+
+                  <div>
+
+
+
+
+                  </div>
+                </div>
+
+
+
+
+
+
+
+
+
+                <div class="info-people" style="margin-top: 16px">
+                  <div class="info-peple-title" style="padding:0">
+                    绑定宗地信息
+                  </div>
+                  <!-- 表格开始 -->
+                  <div class="entrusted_bd" style="padding:0">
+                    <el-table :data="land.landInfoEntities" style="width:100%" default-expand-all>
+                      <el-table-column type="expand" v-cloak>
+
+                        <template slot-scope="props">
+                          <div label-position="left" inline class="demo-table-expand formDetail">
+                            <div class="rule-form-item" style="margin-top:0;flex-wrap:nowrap">
+                              <div>
+                                <span>
+                                  宗地编号：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.boundaryCode}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  挂牌起始价（万元）：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.beginPrice}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  规划条件编号：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.redLineCode}}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div class="rule-form-item" style="flex-wrap:nowrap">
+                              <div>
+                                <span>
+                                  宗地出让面积（㎡）：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.landArea}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  出让年限（年）：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.remainYear}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  土地用途：
+                                </span>
+
+
+                                <span n v-cloak>
+                                  {{props.row.landPurposeCode1}}
+                                </span>
+
+                              </div>
+                            </div>
+                            <div class="rule-form-item" style="flex-wrap:nowrap">
+                              <div>
+                                <span>
+                                  容积率≤：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.volumetricRateMax}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  绿地率（%）≥：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.greenRateMax}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  计容总建筑面积（㎡）≤：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.buildArea}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="rule-form-item" style="flex-wrap:nowrap">
+                              <div>
+                                <span>
+                                  建筑密度≤：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.buildDensityMax}}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  建筑高度 ≥：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.heightMin}}
+                                </span>
+                              </div>
+                              <div>
+
+
+                              </div>
+                            </div>
+
+
+
+                            <div class="rule-form-item" style="flex-wrap:nowrap">
+                              <div>
+                                <span>
+                                  宗地位置：
+                                </span>
+                                <span v-cloak>
+                                  {{props.row.landAddress}}
+                                </span>
+                              </div>
+                              <div>
+
+                              </div>
+                              <div>
+
+                              </div>
+                            </div>
+                          </div>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="宗地编号" prop="boundaryCode" :width="printWidth" align="center">
+                      </el-table-column>
+                      <el-table-column label="宗地位置" prop="landAddress" :width="printWidth" align="center">
+                      </el-table-column>
+                      <el-table-column label="挂牌起始价（万元）" prop="beginPrice" sortable align="center" :width="printWidth">
+                      </el-table-column>
+                      <el-table-column label="操作" width="200" align="center" v-if="!printWidth">
+                        <template slot-scope="scope">
+                          <el-button @click="modify(scope.$index,scope.row,landIndex)" type="text" size="small"
+                            v-if="!isDetail">
+                            编辑
+                          </el-button>
+                          <el-button type="text" size="small" @click="del(scope.$index, scope.row,landIndex)"
+                            v-if="!isDetail">删除
+                          </el-button>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                  <!-- 表格结束 -->
+                  <div style="padding:34px 24px" v-if="!printWidth">
+                    <div class="bindingAdd" @click="bindingAdd(landIndex)" v-if="!isDetail">
+                      <span>+</span> 绑定添加宗地信息
+                    </div>
+                  </div>
+                </div>
+
+
+
+              </el-form>
+              <div class="info-peple-title" style="border:none;height:auto">
+                <span>
+                  标的{{landIndex+1}}物件信息
+                </span>
+
+
+
+              </div>
+              <div class="fujian-message-button">
+                <el-upload :before-upload="beforeAvatarUpload" :data="uploadData" :headers="myHeaders"
+                  :action="baseURL+'/document/upload'" name="files" :show-file-list="false" :multiple="true"
+                  :on-success="function (res, file) { return successOne(res, file, land)}"
+                  :before-upload="beforeAvatarUpload" v-if="!isDetail">
+                  <div class="button blue">上传</div>
+                </el-upload>
+                <div class="button black" style="margin-left: 20px;" @click="downLoadAll()">下载全部</div>
+              </div>
+              <div class="table" v-num>
+                <div class="table-hearder">
+                  <div style="flex:0 1 auto;width:60px"></div>
+                  <div>序号</div>
+                  <div>附件类型</div>
+                  <div style="flex:1.5">附件格式</div>
+                  <div>预览</div>
+                  <div>下载</div>
+                  <div>操作</div>
+                </div>
+                <template v-for="(file,fileIndex) in land.attachedFileEntities">
+                  <div
+                    v-if="(file.isMaster===0&&file.documentInfoEntitys.length>0&&isDetail)||(file.isMaster===0&&!isDetail)"
+                    :key="fileIndex">
+                    <div class="table-tr">
+                      <div style="display: flex;justify-content: center;flex:0 1 auto;width:60px ">
+                        <el-radio v-model="uploadData.belong" :label="file.belongId"><span></span></el-radio>
+                      </div>
+                      <div class="num"></div>
+                      <div @click="showProjectTable(file)">{{file.itemTypeName}}</div>
+                      <div style="flex:1.5">.png .jpeg .jpg .pdf .doc .docx</div>
+                      <div @click="showProjectTable(file)" class="blue-font">展开预览</div>
+                      <div @click="showProjectTable(file)">展开下载</div>
+                      <div>
+                        <span class="blue-font margin-Ri" @click="remove()">
+
+                        </span>
+                      </div>
+
+                    </div>
+
+
+
+                    <div class="table-tr" v-for="(info,infoIndex) in file.documentInfoEntitys" v-show='!file.canSee'>
+                      <div style="flex:0 1 auto;width:60px">
+                      </div>
+                      <div></div>
+                      <div class="blue-font">{{info.name}}</div>
+                      <div style="flex:1.5">{{info.extName}}</div>
+                      <div>
+                        <span @click="viewFile(info.id,info.extName)"
+                          v-if="info.extName=='png'||info.extName=='jpeg'||info.extName=='pdf'||info.extName=='jpg'||info.extName=='pdf'||info.extName=='pdf'"
+                          class="blue-font">
+                          预览
+                        </span>
+
+                        <span v-else>
+                          不可预览
+                        </span>
+                      </div>
+                      <div class="blue-font">
+                        <span class="blue-font margin-Ri" @click="downLoad(info.id)">
+                          下载
+                        </span>
+                      </div>
+                      <div class="blue-font">
+                        <span class="blue-font margin-Ri" @click="remove(info.id,land)" v-if="!isDetail">
+                          删除
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                </template>
+
+
+
+              </div>
+
+
+
+
+            </el-collapse-item>
+          </div>
+        </el-collapse>
+      </div>
+
+
+
+      <div>
+        <el-form :model="formFirst" label-width="auto" class="rule-form" :rules="formrules" label-position="top"
+          :disabled="isDetail" style="padding:0 0 16px 0">
+          <div class="rule-form-item">
+            <div style="width: 100%;">
+              <!-- <div>竞买条件（可选）</div> -->
+              <div class="province-city" style="margin-top: 4px;"  >
+         <!--        <el-form-item label="竞买条件（可选）">
+                  <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 15}" placeholder="请输入竞买条件"
+                    v-model="formFirst.bidderConditions">
+                  </el-input>  
+                </el-form-item> -->
+                
+                   <el-form-item label="竞买条件（可选）">
+                     <script id="content1" name="content1" type="text/plain" style="width:100%;"></script>
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div style="width: 100%;">
+              <!-- <div>成交原则（可选）</div> -->
+              <div class="province-city" style="margin-top: 4px;">
+           <!--      <el-form-item label="成交原则（可选）">
+                  <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 15}" placeholder="请输入成交原则"
+                    v-model="formFirst.transRemark">
+                  </el-input>
+                </el-form-item> --> 
+                
+                <el-form-item label="成交原则（可选）">
+                     <script id="content2" name="content2" type="text/plain" style="width:100%;"></script>
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-form-item">
+            <div style="width: 100%;">
+              <!-- <div>其他公告内容（可选）</div> -->
+              <div class="province-city" style="margin-top: 4px;">
+              <!--   <el-form-item label="其他公告内容（可选）">
+                  <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 15}" placeholder="请输入其他公告内容"
+                    v-model="formFirst.noticeContentOther">
+                  </el-input>
+                </el-form-item> -->
+                
+                <el-form-item label="其他公告内容（可选）">
+                     <script id="content3" name="content3" type="text/plain" style="width:100%;"></script>
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+        </el-form>
+      </div>
+
+
+
+
+      <div class="info-people">
+        <div class="info-peple-title">
+          公告信息
+        </div>
+        <el-form ref="formSecond" :model="formFirst" label-width="auto" class="rule-form" :rules="formrules"
+          label-position="top" style="padding:0 24px 16px 24px" :disabled="isDetail" >
+          <div class="rule-form-item">
+
+            <div>
+
+              <div class="province-city">
+                <el-form-item label="公告编号" prop="noticeNo">
+                  <el-input placeholder="请输入公告编号" v-model="formFirst.noticeNo">
+                  </el-input>
+                </el-form-item>
+              </div>
+            </div>
+
+            <div>
+
+              <div class="province-city">
+                <el-form-item label="公告类型">
+                  <el-input placeholder="请输入内容" v-model="value1" clearable :disabled="true">
+                  </el-input>
+                </el-form-item>
+              </div>
+            </div>
+
+
+            <div>
+              <!-- <div>交易方式</div> -->
+              <div class="province-city">
+                <el-form-item label="公告日期" >
+                  <el-date-picker v-model="formFirst.noticeTime" type="datetime" placeholder="选择日期时间" 
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </div>
+            </div>
+
+
+          </div>
+
+
+          <div class="rule-form-item">
+            <div>
+
+              <div class="province-city">
+                <el-form-item label="公告交易类型" prop="noticeTransType">
+                  <el-select v-model="formFirst.noticeTransType" placeholder="请选择公告交易类型">
+                    <el-option v-for="type in businessType" :key="type.zhCn" :label="type.zhCn" :value="type.dictValue">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+            </div>
+            <div>
+
+              <div class="province-city">
+                <el-form-item label="公告发布时间" >
+                  <el-date-picker v-model="formFirst.noticePushTime" type="datetime" placeholder="选择日期时间"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </div>
+            </div>
+
+
+            <div>
+
+              <div class="province-city">
+                <el-form-item label="备注" >
+                  <el-input placeholder="请输入内容" v-model="formFirst.noticeRemark" clearable>
+                  </el-input>
+
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="rule-form-item">
+            <div style="width: 100%;">
+
+              <div class="province-city">
+                <el-form-item label="公告内容">
+                     <script id="content" name="content" type="text/plain" style="width:100%;"></script>
+                </el-form-item>
+              </div>
+            </div>
+          </div>
+        </el-form>
+      </div>
+
+
+      <div class="info-people" style="margin-top: 16px;">
+        <div class="info-peple-title">
+          标的物附件信息
+        </div>
+        <div class="fujian-message-button">
+          <el-upload :before-upload="beforeAvatarUpload" :data="uploadData" :headers="myHeaders"
+            :action="baseURL+'/document/upload'" name="files" :show-file-list="false" :multiple="true"
+            :on-success="success" :before-upload="beforeAvatarUpload" v-if="!isDetail">
+            <div class="button blue">上传</div>
+          </el-upload>
+          <div class="button black" style="margin-left: 20px;" @click="downLoadAll()">下载全部</div>
+        </div>
+        <div class="table" v-num>
+          <div class="table-hearder">
+            <div style="flex:0 1 auto;width:60px"></div>
+            <div>序号</div>
+            <div>附件类型</div>
+            <div style="flex:1.5">附件格式</div>
+            <div>预览</div>
+            <div>下载</div>
+            <div>操作</div>
+          </div>
+          <template v-for="(item,index) in formFirst.attachedFileEntities">
+
+            <div v-if="item.isMaster===1" :key="index">
+
+
+              <div class="table-tr">
+                <div style="display: flex;justify-content: center;flex:0 1 auto;width:60px ">
+                  <el-radio v-model="uploadData.belong" :label="item.belongId"><span></span></el-radio>
+                </div>
+                <div class="num"></div>
+                <div @click="showProjectTable(item)">{{item.itemTypeName}}</div>
+                <div style="flex:1.5">.png .jpeg .jpg .pdf .doc .docx</div>
+                <div @click="showProjectTable(item)" class="blue-font">展开预览</div>
+                <div @click="showProjectTable(item)">展开下载</div>
+                <div>
+                  <span class="blue-font margin-Ri" @click="remove(item2.id)">
+
+                  </span>
+                </div>
+
+              </div>
+
+
+
+              <div class="table-tr" v-for="(item2,index2) in item.documentInfoEntitys" v-show='!item.canSee'>
+                <div style="flex:0 1 auto;width:60px">
+                </div>
+                <div></div>
+                <div class="blue-font">{{item2.name}}</div>
+                <div style="flex:1.5">{{item2.extName}}</div>
+                <div>
+                  <span @click="viewFile(item2.id,item2.extName)"
+                    v-if="item2.extName=='png'||item2.extName=='jpeg'||item2.extName=='pdf'||item2.extName=='jpg'||item2.extName=='pdf'||item2.extName=='pdf'"
+                    class="blue-font">
+                    预览
+                  </span>
+
+                  <span v-else>
+                    不可预览
+                  </span>
+                </div>
+                <div class="blue-font">
+                  <span class="blue-font margin-Ri" @click="downLoad(item2.id)">
+                    下载
+                  </span>
+                </div>
+                <div class="blue-font">
+                  <span class="blue-font margin-Ri" @click="remove(item2.id)" v-if="!isDetail">
+                    删除
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+          </template>
+
+
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+
+    </div>
+
+
+
+
+
+    <div class="footer" v-cloak>
+      <div class="button blue margin-Ri" @click="submit()" v-if="!isDetail">
+        保存
+
+      </div>
+      <div class="button blue margin-Ri" @click="submitDelegateApply();"
+        v-if="(formFirst.state==1||formFirst.state==22) && !isDetail">
+        提交审核
+      </div>
+      <div class="button black margin-Ri" @click="doPrint" v-if="formFirst.isUse">
+        打印
+      </div>
+    </div>
+
+
+
+    <el-dialog title="绑定添加宗地信息" :visible.sync="isInsert" width="70%" class="my-dialog" v-cloak>
+
+      <div class="entrustedInsert_bd error">
+        <el-form ref="entrustedFormRules" :model="entrustedForm" label-width="auto" :rules="entrustedFormRules">
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="宗地编号：" prop="boundaryCode">
+                <el-input v-model="entrustedForm.boundaryCode" placeholder="请输入宗地编号"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="挂牌起始价（万元）：" prop="beginPrice">
+                <el-input v-model="entrustedForm.beginPrice" placeholder="请输入挂牌起始价"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="规划条件编号：" prop="redLineCode">
+                <el-input v-model="entrustedForm.redLineCode" placeholder="请输入规划条件编号"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="宗地出让面积（㎡）：" prop="landArea">
+                <el-input v-model="entrustedForm.landArea" placeholder="请输入宗地出让面积"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="出让年限（年）：" prop="remainYear">
+                <el-input v-model="entrustedForm.remainYear" placeholder="请输入出让年限"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="土地用途：" prop="landPurposeCode1">
+                <el-input v-model="entrustedForm.landPurposeCode1" placeholder="请输入土地用途"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="容积率≤：">
+                <el-input v-model="entrustedForm.volumetricRateMax" placeholder="请输入容积率"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="绿地率（%）≥：">
+                <el-input v-model="entrustedForm.greenRateMax" placeholder="请输入绿地率"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <el-col :span="12">
+              <el-form-item label="计容总建筑面积（㎡）≤：">
+                <el-input v-model="entrustedForm.buildArea" placeholder="请输入计容总建筑面积"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="建筑密度（%）≤：">
+                <el-input v-model="entrustedForm.buildDensityMax" placeholder="请输入建筑密度"></el-input>
+              </el-form-item>
+            </el-col>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="建筑高度（米）≤：">
+                <el-input v-model="entrustedForm.heightMin" placeholder="请输入建筑高度"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="宗地位置：">
+
+
+                <el-input type="textarea" :rows="2" v-model="entrustedForm.landAddress" placeholder="请输入宗地位置"
+                  prop="landAddress">
+                </el-input>
+
+              </el-form-item>
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <div class="button black margin-Ri" @click="cancelData">
+              取消
+            </div>
+            <div class="button blue margin-Ri" @click="myinsert('entrustedFormRules')">
+              确定
+            </div>
+          </div>
+        </el-form>
+
+
+      </div>
+    </el-dialog>
+    <el-dialog title="编辑宗地信息" :visible.sync="isModify" width="70%" class="my-dialog" v-cloak>
+
+      <div class="entrustedInsert_bd error">
+
+
+        <el-form ref="editorEntrustedFormRules" :model="entrustedFormEditor" label-width="auto"
+          :rules="entrustedFormRules">
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="宗地编号：" prop="boundaryCode">
+                <el-input v-model="entrustedFormEditor.boundaryCode" placeholder="请输入宗地编号"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="挂牌起始价（万元）：" prop="beginPrice">
+                <el-input v-model="entrustedFormEditor.beginPrice" placeholder="请输入挂牌起始价"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="规划条件编号：" prop="redLineCode">
+                <el-input v-model="entrustedFormEditor.redLineCode" placeholder="请输入规划条件编号"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="宗地出让面积（㎡）：" prop="landArea">
+                <el-input v-model="entrustedFormEditor.landArea" placeholder="请输入宗地出让面积"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="出让年限（年）：" prop="remainYear">
+                <el-input v-model="entrustedFormEditor.remainYear" placeholder="请输入出让年限"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="土地用途：" prop="landPurposeCode1">
+                <el-input v-model="entrustedFormEditor.landPurposeCode1" placeholder="土地用途"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="容积率≤：">
+                <el-input v-model="entrustedFormEditor.volumetricRateMax" placeholder="请输入容积率"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="绿地率（%）≥：">
+                <el-input v-model="entrustedFormEditor.greenRateMax" placeholder="请输入绿地率"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="rule-form-item">
+            <el-col :span="12">
+              <el-form-item label="计容总建筑面积（㎡）≤：">
+                <el-input v-model="entrustedFormEditor.buildArea" placeholder="请输入计容总建筑面积"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="建筑密度（%）≤：">
+                <el-input v-model="entrustedFormEditor.buildDensityMax" placeholder="请输入建筑密度"></el-input>
+              </el-form-item>
+            </el-col>
+          </div>
+          <div class="rule-form-item">
+            <div>
+              <el-form-item label="建筑高度（米）≤：">
+                <el-input v-model="entrustedFormEditor.heightMin" placeholder="请输入建筑高度"></el-input>
+              </el-form-item>
+            </div>
+            <div>
+              <el-form-item label="宗地位置：">
+                <el-input v-model="entrustedFormEditor.landAddress" placeholder="请输入宗地位置"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <div class="button blue margin-Ri" @click="cancelData">
+              取消
+            </div>
+            <div class="button black margin-Ri" @click="modifySave('editorEntrustedFormRules')">
+              确定
+            </div>
+          </div>
+        </el-form>
+
+      </div>
+    </el-dialog>
+  <iframe id="preview"  width="0" height="0" frameborder="0" framespacing="0" border="0" >
+  </iframe>
+    <div id="print-contain" style="display:none">
+      <div class="print-table">
+        <div class="print-title tr" style="border-top:1px solid #000"> <span>委托单</span></div>
+
+        <div class="print-title-small tr">
+          <span>委托人基本信息</span>
+        </div>
+        <div class="print-tr tr">
+          <div>委托人单位名称</div>
+          <div>{{formFirst.ownershipName}}</div>
+          <div>委托法定代表人</div>
+          <div>{{formFirst.consignerCorporation}}</div>
+        </div>
+        <div class="print-tr tr">
+          <div>委托人单位性质</div>
+          <div>{{formFirst.ownershipType}}</div>
+          <div>代理人数字证书编号</div>
+          <div>{{formFirst.consignerHandlerCertificate}}</div>
+        </div>
+        <div class="print-tr-special tr">
+          <div> <span>委托单位地址</span></div>
+          <div> <span>{{formFirst.consignerAddress}}</span></div>
+        </div>
+        <div class="print-tr tr">
+          <div>代理人名称</div>
+          <div>{{formFirst.consignerHandlerName}}</div>
+          <div>代理人身份证号码</div>
+          <div>{{formFirst.consignerHandlerNo}}</div>
+        </div>
+        <div class="print-tr tr">
+          <div>代理人联系电话</div>
+          <div>{{formFirst.consignerHandlerPhone}}</div>
+          <div>电子邮箱</div>
+          <div>{{formFirst.consignerHandlerEmail}}</div>
+        </div>
+
+        <template v-for="(land,landIndex) in lands">
+          <div class="print-title-small tr">
+            <span>标的信息</span>
+          </div>
+
+          <div class="print-tr tr">
+            <div>交易方式</div>
+            <div>{{land.transTypeName}}</div>
+            <div>交易类型</div>
+            <div>{{land.businessTypeName}}</div>
+          </div>
+          <div class="print-tr tr">
+            <div>是否允许联合竞买</div>
+            <div>
+             <span v-if="land.allowUnin">是</span>
+             <span v-else>否</span>
+            </div>
+            <div>允许自然人参与</div>
+            <div>
+                   <span v-if="land.allowNatutal">是</span>
+             <span v-else>否</span>
+            
+          </div>
+          </div>
+          <div class="print-tr tr">
+            <div>资格审核方式</div>
+            <div>
+                       <span v-if="land.isAfterCheck==0">
+                        交易前审核
+                      </span>
+                      <span v-if="land.isAfterCheck==1">
+                        交易后审核
+                      </span>            
+            
+            </div>
+            <div>组合方案</div>
+            <div>
+                  <span v-if="land.bindCase=='1'" v-cloak>
+                      一宗地一公告
+                    </span>
+                    <span v-if="land.bindCase=='2'" v-cloak>
+                      多宗地一公告
+                    </span>
+                    <span v-if="land.bindCase=='9'" v-cloak>
+                      多宗地绑定
+                    </span>
+            </div>
+          </div>
+
+
+          <div class="print-tr tr" v-if="land.bindCase===9">
+            <div><span>规划单元组合</span></div>
+            <div>{{land.groupName}}</div>
+
+          </div>
+
+          <div class="print-tr tr">
+            <div>底价</div>
+            <div>{{land.reservePrice}}</div>
+            <div>批准文件编号</div>
+            <div>{{land.redContentNo}}</div>
+          </div>
+
+
+
+          <div class="print-tr tr" v-if="land.transType==='1'||land.transType==='0'">
+            <div>挂牌起始价(万元)</div>
+            <div>{{land.beginPrice}}</div>
+            <div>增幅价格(万元)</div>
+            <div>{{land.priceStep}}</div>
+          </div>
+          <div class="print-tr-special tr" v-if="land.transType==='1'||land.transType==='0'">
+            <div>批准机构</div>
+            <div><span>{{land.checkName}}</span></div>
+          </div>
+
+          <div class="print-tr tr" v-if="land.transType==='2'">
+            <div>地价起始价(万元)</div>
+            <div>{{land.beginPrice}}</div>
+            <div>地价封顶价(万元)</div>
+            <div>{{land.finalPrice}}</div>
+          </div>
+          <div class="print-tr tr" v-if="land.transType==='2'">
+            <div>增幅价格(万元)</div>
+            <div>{{land.priceStep}}</div>
+            <div>最高销售单价(万元)</div>
+            <div>{{land.salMaxPrice}}</div>
+          </div>
+          <div class="print-tr tr" v-if="land.transType==='2'">
+            <div>优惠幅度</div>
+            <div>{{land.disPriceStep}}</div>
+            <div>最低销售单价(元)</div>
+            <div>{{land.salReservePrice}}</div>
+          </div>
+          <div class="print-tr-special tr" v-if="land.transType==='2'">
+            <div><span>房屋面积</span>
+            </div>
+            <div><span>{{land.houseArea}}</span></div>
+
+          </div>
+          <div class="print-tr tr">
+            <div>
+            </div>
+            <div style="border-left:none"></div>
+          </div>
+          <div class="print-title-small tr">
+            <span>宗地绑定信息</span>
+          </div>
+
+          <template v-for="(info,infoIndex) in land.landInfoEntities">
+            <div class="print-tr tr">
+              <div>宗地编号</div>
+              <div>{{info.boundaryCode}}</div>
+              <div>挂牌起始价(万元)</div>
+              <div>{{info.beginPrice}}</div>
+            </div>
+            <div class="print-tr tr">
+              <div>宗地出让面积(㎡)</div>
+              <div>{{info.landArea}}</div>
+              <div>出让年限(年)</div>
+              <div>{{info.remainYear}}</div>
+            </div>
+            <div class="print-tr tr">
+              <div>容积率≤</div>
+              <div>{{info.volumetricRateMax}}</div>
+              <div>绿地率(%)≥</div>
+              <div>{{info.greenRateMax}}</div>
+            </div>
+            <div class="print-tr tr">
+              <div>建筑密度(%)≤</div>
+              <div>{{info.buildDensityMax}}</div>
+              <div>建筑高度(米)≤</div>
+              <div>{{info.heightMin}}</div>
+            </div>
+            <div class="print-tr-special tr">
+              <div>宗地位置</div>
+              <div><span>{{info.landAddress}}</span></div>
+
+            </div>
+            <div class="print-tr tr">
+              <div>
+              </div>
+              <div style="border-left:none"></div>
+            </div>
+
+          </template>
+        </template>
+        
+        
+      
+        
+        
+        
+        
+        
+        
+      
+        <div class="print-tr-special tr big" style="height:auto;overflow:visible">
+
+          <div> <span>竞买条件</span></div>
+          <div > <span v-html="formFirst.bidderConditions"></span></div>
+        </div>
+
+        <div class="print-tr-special big tr" style="height:auto;overflow:visible">
+
+          <div> <span>成交原则</span></div>
+          <div> <span v-html="formFirst.transRemark"></span></div>
+        </div>
+
+        <div class="print-tr-special big tr" style="height:auto;overflow:visible">
+
+          <div> <span>其他公告内容</span></div>
+          <div> <span v-html="formFirst.noticeContentOther"></span></div>
+        </div>
+                
+          <div class="print-tr tr after" >
+            <div>
+            </div>
+            <div style="border-left:none"></div>
+          </div>
+         <div class="print-title-small tr">
+          <span>公告信息</span>
+        </div>
+         <div class="print-tr tr">
+          <div>公告编号</div>
+          <div>{{formFirst.noticeNo}}</div>
+          <div>公告类型</div>
+          <div>{{value1}}</div>
+        </div>
+         <div class="print-tr tr">
+          <div>公告日期</div>
+          <div>{{formFirst.noticeTime}}</div>
+          <div>交易类型</div>
+          <div>{{formFirst.noticeTransTypeName}}</div>
+        </div>
+
+        <div class="print-tr-special tr">
+            <div><span>备注</span></div>
+            <div><span>{{formFirst.noticeRemark}}</span></div>
+          </div>
+          
+          
+          <div class="print-title-small tr" >
+            <div style="text-align:center">公告内容</div>
+
+          </div >
+          <div class="print-tr tr big" style="height:auto;overflow:visible">
+         <div v-html="formFirst.noticeContent">
+            
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+
+  <div class="modal fade" style="display:none;" id="modal-start" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width: 50%">
+      <div class="modal-content">
+        <div class="modal-header">
+
+
+          <div style="float: right; font-size: 18px;">
+            <a href="#" data-dismiss="modal" data-action="collapse">
+              <i class="ace-icon fa fa-close"></i>
+            </a>
+          </div>
+          <h4 class="modal-title" id="title">流程流转</h4>
+
+
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <ul class="select-box" id="taskInfoList">
+              </ul>
+            </div>
+            <div class="form-group">
+              <div style="display:flex;justify-content: center;margin-top:16px">
+
+
+
+                <div class="button blue margin-Ri" onclick="startProcess()">
+                  确定
+                </div>
+
+                <div class="button black margin-Ri" onclick="cancelProcess()">
+                  取消
+                </div>
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+
+
+
+<script src="${basePath}/common/theme/ace/js/jquery-2.1.4.min.js"></script>
+<!-- 刷新数据 -->
+
+
+
+
+<script src="${basePath}/common/plugins/websocket/sockjs.min.js"></script>
+<script src="${basePath}/common/plugins/websocket/stomp.js"></script>
+<script src="${basePath}/oa/common/websocketCommon.js"></script>
+<!-- 弹框 -->
+<script src="${basePath}/common/plugins/pop/plug-in.js"></script>
+
+
+<!-- 获取token和链接参数 -->
+<script src="${basePath}/admin/common.js"></script>
+<!-- 校验参数 -->
+<script src="${basePath}/admin/js/myvalidate.js"></script>
+
+<!-- 工作流 -->
+<script src="${basePath}/business/oa/dealwith-events-target_two.js?v=201901"></script>
+<script src="${basePath}/business/oa/headerbutton-events-target_two.js?v=201901"></script>
+
+<!-- 新增 -->
+<script src="${basePath}/oa/workflow/js/vue.js"></script>
+<script src="${basePath}/oa/workflow/js/element.js"></script>
+<script src="${basePath}/oa/workflow/js/axios.min.js"></script>
+
+<script type="text/javascript" src="${basePath}/oa/workflow/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="${basePath}/oa/workflow/ueditor/ueditor.all.js"></script>
+
+<script>
+
+  var flowtype = "opensaleapply";
+  var token = localStorage.getItem("token")
+  function startProcess() {
+    dtHeaderButtonEvents.startProcess();
+
+  }
+
+
+  function cancelProcess() {
+    dtHeaderButtonEvents.cancel();
+
+  }
+
+
+
+</script>
+
+<script type="text/babel">
+
+
+
+  var checkPhone = (rule, value, callback) => {
+    const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+    if (!value) {
+      return callback(new Error('电话号码不能为空'))
+    }
+    setTimeout(() => {
+      if (!Number.isInteger(+value)) {
+        callback(new Error('请输入数字值'))
+      } else {
+        if (phoneReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('电话号码格式不正确'))
+        }
+      }
+    }, 100)
+  }
+  var checkEmail = (rule, value, callback) => {
+    const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/
+    if (!value) {
+      return callback(new Error('邮箱不能为空'))
+    }
+    setTimeout(() => {
+      if (mailReg.test(value)) {
+        callback()
+      } else {
+        callback(new Error('请输入正确的邮箱格式'))
+      }
+    }, 100)
+  }
+  window.app2 = new Vue({
+    el: '#app',
+
+    data: {
+      lands: [],
+      value1: '普通公告',
+      isDetail: T.p('isDisplay') === 'true',
+      myHeaders: {
+        token: localStorage.getItem("token")
+      },
+      uploadData: {
+        belong: ''
+      },
+      printHtml: '',
+      fileList: [],
+      entrustedForm: {
+        parcelNo: "",
+        beginPrice: "",
+        planNO: "",
+        soldArea: "",
+        soldYear: "",
+        landNature: "",
+        plotRatio: "",
+        greenRatio: "",
+        totalRatio: "",
+        density: "",
+        height: "",
+        address: ""
+      },
+      landIndex: '',
+      entrustedFormRules: {
+        boundaryCode: [
+          {
+            required: true,
+            message: '宗地编号不能为空',
+            trigger: 'blur',
+          },
+        ],
+        beginPrice: [
+          {
+            required: true,
+            message: '挂牌起始价不能为空',
+            trigger: 'blur',
+          },
+        ],
+        redLineCode: [
+          {
+            required: true,
+            message: '规划条件编号不能为空',
+            trigger: 'blur',
+          },
+        ],
+        landArea: [
+          {
+            required: true,
+            message: '宗地出让面积不能为空',
+            trigger: 'blur',
+          },
+        ],
+        remainYear: [
+          {
+            required: true,
+            message: '委托人单位名称不能为空',
+            trigger: 'blur',
+          },
+        ],
+        landPurposeCode1: [
+          {
+            required: true,
+            message: '土地用途不能为空',
+            trigger: 'blur',
+          },
+        ],
+        volumetricRateMax: [
+          {
+            required: true,
+            message: '容积率不能为空',
+            trigger: 'blur',
+          },
+        ],
+        greenRateMax: [
+          {
+            required: true,
+            message: '绿地率不能为空',
+            trigger: 'blur',
+          },
+        ],
+        buildArea: [
+          {
+            required: true,
+            message: '计容总建筑面积不能为空',
+            trigger: 'blur',
+          },
+        ],
+        buildDensityMax: [
+          {
+            required: true,
+            message: '建筑密度不能为空',
+            trigger: 'blur',
+          },
+        ],
+        heightMin: [
+          {
+            required: true,
+            message: '建筑高度不能为空',
+            trigger: 'blur',
+          },
+        ],
+        landAddress: [
+          {
+            required: true,
+            message: '宗地位置不能为空',
+            trigger: 'blur',
+          },
+        ],
+      },
+      formrules: {
+        //委托人基本信息
+        ownershipName: [
+          {
+            required: true,
+            message: '委托人单位名称不能为空',
+            trigger: 'blur',
+          },
+        ],
+        consignerCorporation: [
+          {
+            required: true,
+            message: '委托法定代表人不能为空',
+            trigger: 'blur',
+          },
+        ],
+        ownershipType: [
+          {
+            required: true,
+            message: '请选择委托人单位性质',
+            trigger: 'change'
+          },
+        ],
+        consignerAddress: [
+          {
+            required: true,
+            message: '委托单位地址不能为空',
+            trigger: 'blur',
+          },
+        ],
+        consignerHandlerName: [
+          {
+            required: true,
+            message: '代理人名称不能为空',
+            trigger: 'blur',
+          },
+        ],
+        consignerHandlerNo: [
+          {
+            required: true,
+            message: '代理人身份证号码不能为空',
+            trigger: 'blur',
+          },
+        ],
+        consignerHandlerPhone: [
+          {
+            required: true,
+            message: '代理人联系电话不能为空',
+            trigger: 'blur',
+          },
+          { validator: checkPhone, trigger: 'blur' },
+        ],
+        consignerHandlerCertificate: [
+          {
+            required: true,
+            message: '数字证书编号不能为空',
+            trigger: 'blur',
+          },
+        ],
+        consignerHandlerEmail: [
+          { required: true, message: '电子邮箱不能为空', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' },
+        ],
+        //标的物件信息
+        noticeTime: [
+          {
+            required: true,
+            message: '请选择公告日期',
+            trigger: 'change',
+          }
+        ],
+        noticeTransType: [
+          {
+            required: true,
+            message: '请选择交易类型',
+            trigger: 'change',
+          }
+        ],
+        noticePushTime: [
+          {
+            required: true,
+            message: '请选择公告发布时间',
+            trigger: 'change',
+          }
+        ],
+
+
+        noticeRemark: [
+          { required: true, message: '资源审核不能为空', trigger: 'blur' },
+        ],
+
+        noticeContent: [
+          { required: true, message: '公告内容不能为空', trigger: 'blur' },
+        ],
+        transType: [
+          {
+            required: true,
+            message: '请选择交易类型',
+            trigger: 'change',
+          },
+        ],
+        cantnoId: [
+          {
+            required: true,
+            message: '请选择区域',
+            trigger: 'change',
+          },
+        ],
+        businessType: [
+          {
+            required: true,
+            message: '请选择交易方式',
+            trigger: 'change',
+          },
+        ],
+        landPurposeCode1: [
+          {
+            required: true,
+            message: '请选择土地用途：',
+            trigger: 'change',
+          },
+        ],
+        isAfterCheck: [
+          { required: true, message: '资源审核不能为空', trigger: 'blur' },
+        ],
+        bindCase: [
+          { required: true, message: '请选择绑定方案', trigger: 'change' },
+        ],
+        name: [
+          {
+            required: true,
+            message: '规划单元组合不能为空',
+            trigger: 'blur',
+          },
+        ],
+        beginPrice: [
+          {
+            required: true,
+            message: '地价起始价不能为空',
+            trigger: 'blur',
+          },
+        ],
+        finalPrice: [
+          {
+            required: true,
+            message: '地价封顶价不能为空',
+            trigger: 'blur',
+          },
+        ],
+       noticeNo: [
+          { required: true, message: '公告编号不能为空', trigger: 'blur' },
+        ],
+        priceStep: [
+          {
+            required: true,
+            message: '增幅价格不能为空',
+            trigger: 'blur',
+          },
+        ],
+        earnestMoney: [
+          {
+            required: true,
+            message: '保证金不能为空',
+            trigger: 'blur',
+          },
+        ],
+        salMaxPrice: [
+          {
+            required: true,
+            message: '最高销售单价不能为空',
+            trigger: 'blur',
+          },
+        ],
+        disPriceStep: [
+          {
+            required: true,
+            message: '优惠幅度不能为空',
+            trigger: 'blur',
+          },
+        ],
+        salReservePrice: [
+          {
+            required: true,
+            message: '最低销售单价不能为空',
+            trigger: 'blur',
+          },
+        ],
+        houseArea: [
+          {
+            required: true,
+            message: '房屋面积不能为空',
+            trigger: 'blur',
+          },
+        ],
+      },
+      entrustedFormrules: {
+        boundaryCode: [
+          { required: true, message: '宗地编号不能为空', trigger: 'blur' },
+        ],
+        beginPrice: [
+          {
+            required: true,
+            message: '挂牌起始价不能为空',
+            trigger: 'blur',
+          },
+        ],
+        redLineCode: [
+          { required: true, message: '规划条件不能为空', trigger: 'blur' },
+        ],
+        landArea: [
+          {
+            required: true,
+            message: '宗地出让面积不能为空',
+            trigger: 'blur',
+          },
+        ],
+
+        remainYear: [
+          { required: true, message: '出让年限不能为空', trigger: 'blur' },
+        ],
+        landPurposeCode1: [
+          { required: true, message: '土地用途能为空', trigger: 'blur' },
+        ],
+        volumetricRateMax: [
+          { required: true, message: '容积率不能为空', trigger: 'blur' },
+        ],
+        greenRateMax: [
+          { required: true, message: '绿地率不能为空', trigger: 'blur' },
+        ],
+        buildArea: [
+          {
+            required: false,
+            message: '计容总建筑面积不能为空',
+            trigger: 'blur',
+          },
+        ],
+        buildDensityMax: [
+          { required: true, message: '建筑密度不能为空', trigger: 'blur' },
+        ],
+        heightMin: [
+          { required: true, message: '建筑高度不能为空', trigger: 'blur' },
+        ],
+        landAddress: [
+          { required: true, message: '宗地位置不能为空', trigger: 'blur' },
+        ],
+      },
+      printWidth: '',
+      entrustedFormEditor: {
+        parcelNo: "",
+        beginPrice: "",
+        planNO: "",
+        soldArea: "",
+        soldYear: "",
+        landNature: "",
+        plotRatio: "",
+        greenRatio: "",
+        totalRatio: "",
+        density: "",
+        height: "",
+        address: "",
+        landPurposeCode1: ""
+      },
+      belong: 'd3f2bb88-4433-409b-b304-58fce9ac7300',
+      id: T.p('applyId'),
+      userInfo: {},
+      resultArr: [], //接受验证返回结果数组
+      formArr: [], //存放表单ref数组
+      transactionType: [],
+      provinces: [],
+      landPurposes: [],
+      landCharacters: [],
+      ownershipType: [],
+      certificateType: [],
+      itemType: [],
+      businessType: [],
+      landPurposeCode1: [],
+      transType: [],
+      cantnoId: [],
+      isInsert: false,
+      isModify: false,
+
+      modifyIndex: "",
+      modifyObj: {},
+      message: 'Hello Vue!',
+      isShowTop: false,
+      radio: '1',
+      activeNames: [0],
+      form: {
+        bindCase: null,
+        businessType: null,
+        transType: null,
+        cantnoId: null,
+        allowUnin: true,
+        allowNatutal: true,
+        isAllowAutoPrice: true,
+      },
+      rowKeys: [],
+      textarea2: '',
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
+      value3: "",
+      value4: "",
+      value2: "",
+      finish: [],
+
+      load: false,
+      htmlStr: '',
+      formFirst: {
+        consignerHandlerEmail: '',
+        consignerHandlerPhone: '',
+        consignerHandlerCertificate: '',
+        consignerAddress: '',
+        consignerHandlerName: '',
+        consignerHandlerNo: '',
+        ownershipName: '',
+        consignerCorporation: '',
+        ownershipType: null,
+        landPurposeCode1: null,
+        bidderConditions: '',
+        transRemark: '',
+        noticContent: '',
+        noticeTransType:null,
+         ue:{},
+        noticeTime:null,
+          noticePushTime:null
+      },
+      masterId: '',
+      ue1:'',
+ ue2:'',
+ ue3:'',
+
+
+    },
+    mounted() {
+     let that=this
+    this.ue = UE.getEditor('content', {
+  
+            autoHeightEnabled: false,
+            initialFrameHeight: 300,
+            autoFloatEnabled:false,
+
+        });  
+
+    this.ue1 = UE.getEditor('content1', {
+  
+            autoHeightEnabled: false,
+            initialFrameHeight: 300,
+            autoFloatEnabled:false,
+
+        });  
+    this.ue2 = UE.getEditor('content2', {
+  
+            autoHeightEnabled: false,
+            initialFrameHeight: 300,
+            autoFloatEnabled:false,
+
+        });  
+    this.ue3 = UE.getEditor('content3', {
+  
+            autoHeightEnabled: false,
+            initialFrameHeight: 300,
+            autoFloatEnabled:false,
+
+        });  
+     that.ue.ready(function(){
+     that.ue.setContent(that.formFirst.noticeContent)
+     if(that.isDetail){
+        that.ue.setDisabled();  
+     }
+     })
+
+     that.ue1.ready(function(){
+     that.ue1.setContent(that.formFirst.bidderConditions)
+     if(that.isDetail){
+        that.ue1.setDisabled();  
+     }
+     })
+     that.ue2.ready(function(){
+     that.ue2.setContent(that.formFirst.transRemark)
+     if(that.isDetail){
+        that.ue2.setDisabled();  
+     }
+     })
+     that.ue3.ready(function(){
+     that.ue3.setContent(that.formFirst.noticeContentOther)
+     if(that.isDetail){
+        that.ue3.setDisabled();  
+     }
+     })
+
+    },
+
+    directives: {
+      num: {
+        // 指令的定义
+        inserted: function (el, binding, vnode) {
+          setTimeout(function () {
+            let num = el.querySelectorAll('.num')
+            for (var i = 0; i < num.length; i++) {
+              num[i].innerText = i + 1
+            }
+          }, 1000);
+        }
+      },
+      big:{
+       inserted: function (el) {
+            console.dir(el)
+       }
+ 
+      }
+    },
+    created() {
+
+      let token = localStorage.getItem("token");
+      this.baseURL = document.getElementById("basePath").href;
+
+
+
+      $('#preview').attr('src', 'auto/business_apply_print?token=' + token)
+
+      if (!this.id) {
+        this.init(1)
+
+
+      } else {
+        this.getData(this.id)
+      }
+
+      this.getDic(token)
+
+
+    },
+
+    methods: {
+
+	submitDelegateApply() {
+        this.submit(window.dtHeaderButtonEvents.showStart)
+      },
+
+      bindCaseChange(key) {
+        switch (key) {
+          case 1:
+            this.$message('以一宗地对应一个公告出让');
+            break;
+
+          case 2:
+            this.$message('一个出让公告可以有多个宗地，各宗地独立作为一个标的');
+            break;
+          case 9:
+            this.$message({
+              dangerouslyUseHTMLString: true,
+              message: '<p class="messageP">托人要以国家、省、市的规定依据，不能违反有关规定。违反规定的责任由委托人自行承担</p><p class="messageP">一个公告可以有多个标的，各宗地基本信息需要单独录入</p><p class="messageP">请您审查是否符合相关规定</p>'
+            });
+            break;
+        }
+      },
+        doPrint() {
+  
+
+        var doc = document.getElementById("preview").contentDocument || document.frames["preview"].document;
+        doc.body.innerHTML = document.querySelector('#print-contain').innerHTML
+        document.getElementById('preview').contentWindow.iframePrint()
+
+      },
+
+      beforeAvatarUpload() {
+        if (!this.uploadData.belong) {
+          this.$message.warning('请分类目录')
+          return false
+        }
+      },
+      addLand() {
+
+
+        this.init(0)
+
+      },
+
+      async init(master) {
+        var url = encodeURI(this.baseURL + "delegate_target_two/init_target_edit_param?token=" + token);
+        let params = {}
+        var processDefinitionId = T.p('id')
+        params["processDefinitionId"] = processDefinitionId;
+        params["isMaster"] = master;
+        if (master === 0) {
+          params["parentId"] = this.masterId
+        }
+
+        let { data } = await axios({
+          method: "post",
+          url: url,
+          data: {
+            delegateApply: JSON.stringify(params),
+
+          },
+
+          transformRequest: [function (arr) {
+            let ret = ''
+            for (let it in arr) {
+              ret += encodeURIComponent(it) + '=' + encodeURIComponent(arr[it])
+            }
+            return ret
+          }],
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+        })
+
+
+        if (data.code === 0) {
+
+
+          let obj = data.data
+
+          let sort = this.lands.length ? this.lands.length + 1 : 1
+          obj.delegateApply["sort"] = sort
+
+          this.lands.push(obj.delegateApply)
+
+
+          if (master === 1) {
+            this.masterId = obj.delegateApply.id;
+            this.formFirst = obj.delegateApply;
+
+
+
+
+
+
+
+
+
+          } else {
+       
+            this.$nextTick(() => {
+
+              let num = this.lands.length - 1
+              let str = 'title' + num
+              this.$refs[str][0].scrollIntoView()
+             
+              let last = (this.lands.length - 1)
+              this.activeNames.push(last)
+            
+         
+
+            });
+
+
+          }
+        } else {
+          this.$message.error('初始化失败');
+        }
+      },
+      async remove(id, land) {
+        let url = encodeURI(this.baseURL + "document/deleteById?id=" + id);
+        let res = await axios.get(url)
+        this.$message(res.data.msg)
+        this.getOneLand(land)
+      },
+
+      downLoad(id) {
+        window.open(this.baseURL + 'document/downloadById?id=' + id)
+      },
+      downLoadAll() {
+        if (this.id) {
+          window.open(this.baseURL + 'delegate_doc/downloadZipById?token=' + token + '&id=' + this.id)
+        } else {
+          $.Pro("附件不存在");
+        }
+      },
+      viewFile(docId, extName) {
+        if ("pdf" == extName || "doc" == extName || "docx" == extName) {
+          this.showDocPdf(docId, extName);
+        } else {
+          window.open().document.body.innerHTML = '<img src="' + this.baseURL + 'document/downloadById?id=' + docId + '"/>'
+        }
+      },
+
+      showDocPdf(id, extName) {
+        //请求base64
+        if (id == null || id == "") {
+          return 0;
+        }
+        var url = encodeURI(this.baseURL + "document/getFtpFileBase64ById?id=" + id);
+        var baseData = null;
+        $.ajaxSettings.async = false
+        $.post(url, function (r) {
+          if (r.state === "SUCCESS") {
+            baseData = r.data;
+          }
+        });
+        if ("pdf" == extName) {
+          window.open().document.body.innerHTML = '<iframe width="1500" height="700" src="data:application/pdf;base64,' + baseData + '"/>';
+        } else {
+          $.Pro("只可以预览图片或者pdf文件");
+
+        }
+      },
+      success() {
+        this.$message.success('上传成功')
+        this.getOneLand(this.formFirst)
+      },
+      successOne(res, file, land) {
+
+
+        this.$message.success('上传成功')
+        this.getOneLand(land)
+
+      },
+      async getOneLand(land) {
+        let params = 'type=1&id=' + land.id
+        if (land.isMaster === 1) {
+          params += '&isMaster=1'
+        }
+
+
+
+        let { data } = await axios.post(this.baseURL + '/push/get_delegate_apply?' + params)
+        if (data.code !== 0) {
+          this.$message.error('查询附件失败')
+          return
+        }
+
+
+        this.$set(land, 'attachedFileEntities', data.delegateApply.attachedFileEntities)
+
+      },
+      async getData(id) {
+
+        let { data } = await axios.post(this.baseURL + '/delegate_target_two/get_delegate_apply?token=' + token + '&type=1&id=' + id)
+        if (data.code === 0) {
+          this.lands = data.data.delegateApply;
+
+          for (let i = 0; i < this.lands.length; i++) {
+            let temp = this.lands[i]
+            if (temp.allowUnin == 0) {
+              this.$set(temp,'allowUninName',false)
+
+            } else {
+            this.$set(temp,'allowUninName',true)
+           
+            }
+            if (temp.allowNatutal == 0) {
+            this.$set(temp,'allowNatutalName',false)
+             
+            } else {
+               this.$set(temp,'allowNatutalName',true)
+            }
+          }
+
+
+          this.formFirst = this.lands[0]
+            if(this.ue){
+
+   this.$nextTick(() => {
+          this.ue.setContent(this.formFirst.noticeContent)
+      })
+              
+            }
+          
+        }
+      },
+      async getDic(token) {
+        let url = encodeURI(this.baseURL + "admin/dictionaries/initDicts?token=" + token);
+        let { data } = await axios.get(url)
+        const dic = data.dv || []
+
+
+        this.businessType = this.getDictsArrayByGroupId(dic, "business_type");
+
+        this.transType = this.getDictsArrayByGroupId(dic, "trans_type");
+        this.cantnoId = this.getDictsArrayByGroupId(dic, "cantno_id");
+
+        this.landCharacters = this.getDictsArrayByGroupId(dic, "land_character");
+        this.landPurposes = this.getDictsArrayByGroupId(dic, "landPurpose", true);
+        this.ownershipType = this.getDictsArrayByGroupId(dic, "ownership_type");
+        this.certificateType = this.getDictsArrayByGroupId(dic, "certificate_type");
+        this.itemType = this.getDictsArrayByGroupId(dic, "item_type_opentransfer_target");
+
+
+
+      },
+
+      getDictsArrayByGroupId: function (dicts, groupId) {
+        var array = [];
+        var value = 0;
+        for (var i = 0; i < dicts.length; i++) {
+          if (dicts[i].groupId == groupId) {
+            array[value++] = dicts[i];
+          }
+        }
+        return array;
+      },
+      del(index, row, landIndex) {
+        console.log(index, row);
+        this.lands[landIndex].landInfoEntities.splice(index, 1);
+      },
+      //绑定添加
+      bindingAdd(landIndex) {
+        this.isInsert = true;
+        this.landIndex = landIndex
+      },
+      // 取消
+      cancelData() {
+        this.isInsert = false;
+        this.isModify = false;
+      },
+
+      deleteLand(landIndex) {
+        this.lands.splice(landIndex, 1);
+      },
+      checkForm(formName) {
+        let that = this
+        let ele = null
+        if (this.$refs[formName] instanceof Array) {
+          ele = this.$refs[formName][0]
+        } else {
+          ele = this.$refs[formName]
+        }
+
+        console.log(ele)
+
+        let result = new Promise(function (resolve, reject) {
+          ele.validate((valid) => {
+            console.log(valid)
+            if (valid) {
+              resolve()
+            } else {
+              reject()
+            }
+          })
+        })
+        that.resultArr.push(result)
+
+      },
+      submit(callBack) {
+        
+
+
+
+
+       
+        let that = this
+         this.formFirst.noticeContent=encodeURIComponent(this.ue.getContent())
+		this.formFirst.bidderConditions=encodeURIComponent(this.ue1.getContent())
+		this.formFirst.transRemark=encodeURIComponent(this.ue2.getContent())
+		this.formFirst.noticeContentOther=encodeURIComponent(this.ue3.getContent())
+
+         if(!this.formFirst.noticeContent){
+          this.$message.error('公告内容不能为空')
+          return
+        }
+        let token = localStorage.getItem("token");
+        let obj = this.$refs
+
+        for (var i = 0; i < that.lands.length; i++) {
+          let temp = that.lands[i]
+
+
+
+
+          if (temp.allowUninName) {
+            temp.allowUnin = 1
+          } else {
+            temp.allowUnin = 0
+          }
+          if (temp.allowNatutalName) {
+            temp.allowNatutal = 1
+          } else {
+            temp.allowNatutal = 0
+          }
+
+
+
+
+          if (!temp.landInfoEntities.length) {
+            this.$message.error('请绑定标的' + (i + 1) + '的宗地信息')
+            return
+          }
+
+
+
+
+        }
+
+
+        var reg = /land/
+        let arr = []
+        for (var k in obj) {
+          if (obj[k][0] && reg.test(k))
+            arr.push(k)
+        }
+        arr.push("formFirst")
+        arr.push("formSecond")
+
+        that.formArr = arr
+        that.load = true
+        console.log(arr)
+
+
+        that.resultArr = []
+
+
+
+
+
+
+        that.formArr.forEach((item) => {
+          that.checkForm(item)
+        })
+        Promise.all(that.resultArr)
+          .then(async function () {
+
+            that.load = false
+
+            var url = encodeURI(
+              that.baseURL + 'delegate_target_two/save?token=' + token
+            )
+
+
+            let params = {
+              masterId: that.formFirst.id,
+              delegateApplyList: that.lands
+            }
+
+
+
+            if (T.p('id') && T.p('id') !== 'null') {
+              params["processDefinitionId"] = T.p('id')
+            }
+
+
+
+
+            let { data } = await axios({
+              method: "post",
+              url: url,
+              data: {
+                delegateApply: JSON.stringify(params)
+              },
+
+              transformRequest: [function (data) {
+                let ret = ''
+                for (let it in data) {
+                  ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it])
+                }
+                return ret
+              }],
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+            })
+
+
+
+
+            if (data.code === 0) {
+              if (callBack) {
+                callBack()
+                that.load = false
+                return
+              }
+
+
+
+              let f5Id = that.formFirst.id
+              that.$message.success('保存成功,可去我的交易-委托申请管理查看')
+
+              //保存转跳修改页面
+              if (T.p('applyId') == '' || T.p('applyId') == 'null' || T.p('applyId') == null) {
+                var tabObj = {
+                  applyId: f5Id,
+                  title: "委托标的编辑",
+                  close: true,
+                  url: formatUrl("auto/business_apply_opensaleapply20200715?applyId=" + f5Id + "&processid=" + T.p('processid') + "&id=" + T.p('id'))
+                };
+
+
+                parent.addTabs(tabObj);
+                parent.closeTab("tab_" + T.p('formId'));
+              }
+              that.getData(f5Id)
+
+
+
+            } else {
+              let str = data.msg ? data.msg : '保存失败'
+              that.$message.error(str);
+
+              that.load = false
+            }
+          }).catch(function () {
+            that.load = false
+            that.$message.warning('请确认信息是否填写完整');
+
+          })
+
+      },
+      // 新增
+      myinsert(formName) {
+
+        this.$refs[formName].validate(async (valid) => {
+          if (valid) {
+
+            let obj = JSON.parse(JSON.stringify(this.entrustedForm))
+
+
+            let { data } = await axios({
+              method: "get",
+              url: this.baseURL + "land_info/list",
+              params: {
+                boundaryCode: this.entrustedForm.boundaryCode
+              },
+              headers: {
+                token: token
+              }
+            })
+
+            if (data.code !== 0) {
+              return
+            }
+
+            if (data.pager.results.length) {
+              this.$message.error('宗地编号重复')
+              return
+            }
+
+
+
+            this.entrustedForm = {
+              parcelNo: "",
+              beginPrice: "",
+              planNO: "",
+              soldArea: "",
+              soldYear: "",
+              landNature: "",
+              plotRatio: "",
+              greenRatio: "",
+              totalRatio: "",
+              density: "",
+              height: "",
+              address: ""
+            }
+            this.lands[this.landIndex].landInfoEntities.unshift(obj);
+            this.isInsert = false;
+          } else {
+            this.$message.warning('请确认信息是否填写完整')
+            return false;
+          }
+        });
+
+
+
+
+      },
+
+      // 编辑
+      modify(index, row, landIndex) {
+        this.landIndex = landIndex
+        this.modifyIndex = index;
+        this.isModify = true;
+        this.entrustedFormEditor = JSON.parse(JSON.stringify(row))
+
+      },
+
+
+      // 修改保存
+      modifySave(formName) {
+
+
+
+        this.$refs[formName].validate(async (valid) => {
+          if (valid) {
+
+            let obj = JSON.parse(JSON.stringify(this.entrustedFormEditor))
+
+
+            let { data } = await axios({
+              method: "get",
+              url: this.baseURL + "land_info/list",
+              params: {
+                boundaryCode: this.entrustedFormEditor.boundaryCode
+              },
+              headers: {
+                token: token
+              }
+            })
+
+            if (data.code !== 0) {
+              return
+            }
+
+            if (T.p('id') && T.p('id') !== 'null') {
+              if (data.pager.totalRecord) {
+                this.$message.error('宗地编号重复')
+                return
+              }
+            } else {
+
+              if (data.pager.totalRecord && data.pager.totalRecord !== 1) {
+                this.$message.error('宗地编号重复')
+                return
+              }
+            }
+
+            this.$set(this.lands[this.landIndex].landInfoEntities, this.modifyIndex, this.entrustedFormEditor)
+
+
+            this.isModify = false
+          } else {
+            this.$message.warning('请确认信息是否填写完整')
+            return false;
+          }
+        });
+
+        ;
+      },
+      showProjectTable(item) {
+
+        item.canSee ? this.$set(item, 'canSee', false) : this.$set(item, 'canSee', true)
+      },
+
+    },
+
+
+
+  })
+</script>
+
+
+
+</html>

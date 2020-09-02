@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>土地公开转让受理</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta ontent="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-control" content="no-cache" />
+    <meta http-equiv="Cache" content="no-cache" />
+    <base id="basePath" href="${basePath}">
+    <link rel="stylesheet" href="${basePath}/common/theme/bootstap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${basePath}/common/theme/ace/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="${basePath}/common/plugins/jqGrid/css/ui.jqgrid.css" />
+    <link rel="stylesheet" href="${basePath}/common/theme/ace/css/jquery-ui.custom.min.css">
+    <link rel="stylesheet" href="${basePath}/common/plugins/gritter/css/jquery.gritter.min.css" />
+    <link rel="stylesheet" href="${basePath}/common/theme/ace/css/ace.min.css" />
+    <link rel="stylesheet" href="${basePath}/common/theme/ace/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="${basePath}/common/theme/ace/css/ace-skins.min.css" />
+    <link rel="stylesheet" href="${basePath}/common/plugins/zTree/css/zTreeStyle/zTreeStyle.css" />
+    <link rel="stylesheet" href="${basePath}/admin/css/style.css" />
+    <link rel="stylesheet" href="${basePath}/oa/workflow/css/formMain.css" />
+    <link rel="stylesheet" href="${basePath}/oa/workflow/css/flowTrace.css" />
+    <style type="text/css">
+    	.must {
+            color: red;
+        }
+        .leave .control-label {
+            text-align: right;
+        }
+
+        .leave .form-group {
+            margin-top: 5px;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .leave textarea {
+            resize: none
+        }
+
+        .col-sm-group-div {
+            text-align: right;
+            margin-top: 7px;
+        }
+        .better-unbind{
+			cursor: pointer;
+		}
+		.table-border tr th{
+			text-align:center;
+			border:1px solid #C5D0DC;
+		}
+		.applicant-table{
+			width:100%;
+			border:1px solid #ddd;
+		}
+		.applicant-table tr td{
+			width:50%;
+			border:1px solid #ddd;
+			padding:0
+		}
+		.applicant-table tr td>div{
+			height:64px;
+			line-height:64px;
+			font-size:18px;
+			box-sizing:border-box;
+			float:left
+		}
+		.applicant-table-left{
+			background:#f4f5f9;
+			width:30%;
+			border-right:1px solid #ddd;
+			text-align:right;
+			padding-right:16px;
+		}
+		.applicant-table-right{
+			width:70%;
+			padding-left:16px
+		}
+		.applicant-table-right>input{
+			width:400px;
+			height:34px;
+			margin-top:15px;
+		}
+		.applicant-table-right>select{
+			width:200px;
+			height:34px;
+			margin-top:15px;
+		}
+		.tranLin{
+			padding: 0px 150px;
+		}
+		.moreTable{
+			width:100%;
+			border:1px solid #ddd
+		}
+		.moreTable td{
+			border:1px solid #ddd;
+			height:40px;
+			font-size:16px;
+			text-align:center
+		}
+		@media screen and (max-width: 1800px){
+			.applicant-table-right>input{
+				width:310px
+			}
+			.tranLin{
+				padding: 0px 50px;
+			}
+		}
+    </style>
+</head>
+
+<body>
+    <div id="rrapp" v-cloak>
+        <input type="hidden" id="curUserName" value="${userName!}" />
+        <div class="main-container ace-save-state" id="main-container">
+            <div class="main-content">
+                <div class="main-content-inner">
+                    <div class="page-content">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <!-- PAGE CONTENT BEGINS -->
+                                <div id="main-widget-container">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 widget-container-col"
+                                            id="widget-container-col-1">
+                                            <div class="widget-box" id="widget-box-1">
+                                                <div class="widget-header">
+                                                    <span class="btn btn-xs btn-primary" id="perHeader" onclick="perHeaderClick();">申请信息</span>
+                                                    <span class="btn btn-xs" id="landHeader" onclick="landHeaderClick();">土地信息</span>
+                                                    <span class="btn btn-xs" id="materHeader" onclick="materHeaderClick();">材料清单</span>
+                                                </div>
+                                                <!--startprint申请信息-->
+                                                <div class="widget-body widget-body-left" id="per">
+                                                    <div class="widget-main div-scroll-left">
+                                                        <div class="applyPerson">
+
+                                                            <!-- 申请人信息start -->
+                                                            <h3 style="text-align: center;font-size:28px;margin-top:40px;margin-bottom:30px">转让人基本信息</h3>
+                                                            <input type="hidden" class="form-control"  v-model="delegateApply.transactionType" /> 
+                                                            <div class="tranLin">
+                                                            	<table class="applicant-table">
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>委托名称</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.title"/>
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>委托事项</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.matter"/>
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>权属人性质</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<!--<select class="form-control" id="ownershipType" validate="notNull" v-model="delegateApply.ownershipType">
+															                        <option v-for="type in ownershipType" :value="type.zhCn">
+															                            {{type.zhCn}}
+															                        </option>
+															                    </select>-->
+                                                                                <input type="text" class="form-control" validate="notNull" v-model="delegateApply.ownershipType" />
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>姓名/名称(权属人)</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.ownershipName" />
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>证件种类</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<select class="form-control" id="certificateType" validate="notNull" v-model="delegateApply.ownershipCertType">
+															                        <option v-for="type in certificateType" :value="type.zhCn">
+															                            {{type.zhCn}}
+															                        </option>
+															                    </select>
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>证件号</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.ownershipCertNo" />
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>固定电话/联系电话</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.consignerPhone" />
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>地址</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.consignerAddress" />
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left">法人（负责人）</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" v-model="delegateApply.consignerCorporation" />
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left">身份证号</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" v-model="delegateApply.consignerCorporationNo" />
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>联系人/代理人</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.consignerHandlerName" />
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>联系电话</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.consignerHandlerPhone" />
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            		<tr>
+                                                            			<td>
+                                                            				<div class="applicant-table-left"><span class="must">*</span>代理人身份证号</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" validate="notNull" v-model="delegateApply.consignerHandlerNo" />
+                                                            				</div>
+                                                            			</td>
+                                                            			<td>
+                                                            				<div class="applicant-table-left">代理人联系地址</div>
+                                                            				<div class="applicant-table-right">
+                                                            					<input type="text" class="form-control" v-model="delegateApply.consignerHandlerAddress" />
+                                                            				</div>
+                                                            			</td>
+                                                            		</tr>
+                                                            	</table>
+                                                             </div>
+                                                            <h3 style="text-align: center;font-size:28px;margin-top:40px;margin-bottom:30px">审批机关信息</h3>
+                                                            <input type="hidden" class="form-control"  v-model="delegateApply.transactionType" />
+                                                            <div class="tranLin">
+                                                                <table class="applicant-table">
+
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关名称</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control" v-model="delegateApply.checkName" />
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关性质</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control"  v-model="delegateApply.checkNameType" />
+                                                                            </div>
+                                                                        </td>
+
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关证件种类</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control" v-model="delegateApply.checkNameCertType" />
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关证件号</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control"  v-model="delegateApply.checkNameCertNo" />
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关法人</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control" v-model="delegateApply.checkNameHandler" />
+                                                                            </div>
+                                                                        </td>
+
+                                                                        <td>
+                                                                            <div class="applicant-table-left">统一社会信用代码</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control"  v-model="delegateApply.checkNameThreeCertNo" />
+                                                                            </div>
+                                                                        </td>
+
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关联系电话</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control"  v-model="delegateApply.checkNamePhone" />
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="applicant-table-left">审批机关地址</div>
+                                                                            <div class="applicant-table-right">
+                                                                                <input type="text" class="form-control"  v-model="delegateApply.checkNameAddress" />
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+
+
+                                                                </table>
+                                                            </div>
+                                                            <!-- 申请人信息end -->
+
+                                                            <div style="text-align: center; margin-top: 15px">
+                                                                <a class="btn btn-xs btn-primary"
+                                                                    onclick="perNext();">下一页</a>
+                                                               <!--  <a class="btn btn-xs btn-primary" id="sentDave"
+                                                                    onclick="saveDelegateApply();">保存</a> -->
+                                                            </div>
+                                                            <div
+                                                                style="text-align: center; margin-left: 15%;margin-right: 5%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--endprint-->
+                                                
+                                                <!--startprint土地信息-->
+                                                <div class="widget-body widget-body-left" id="land" style="display:none;">
+                                                    <div class="widget-main div-scroll-left">
+                                                        <div class="applyPerson">
+                                                            <!-- 地块信息start -->
+                                                              <iframe name="myiframe" id="landss" style="border-radius: 6px; border: 1px solid #E0E0E0;"
+                                    						frameborder="no" width="100%" height="520" src=""></iframe>
+                                                            <!-- 选择地块end -->
+                                                            <div style="text-align: center; margin-top: 15px">
+                                                                <a class="btn btn-xs btn-primary" onclick="landUp();">上一步</a>
+                                                                <a class="btn btn-xs btn-primary" onclick="landNext();">下一步</a>
+                                                            </div>
+                                                            <div
+                                                                style="text-align: center; margin-left: 15%;margin-right: 5%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--endprint土地信息-->
+                                                <!--startprint材料清单-->
+                                                <div class="widget-body widget-body-left" id="mater"
+                                                    style="display:none;">
+                                                    <div class="widget-main div-scroll-left">
+                                                        <div class="attachedFile">
+                                                            <!-- 这个页面引用applyupload页面，是此页面和applyupload页面vue冲突 -->
+                                                            <#include "../../public/applyupload.html">
+                                                            
+                                                            <div class="form-group" v-bind:class="{hidden: isHidden }" el-button="noPassBtn"  style="overflow:hidden">
+                                                            	<div>
+                                                            		<div class="col-sm-5"></div>
+                                                            		<div class="col-sm-7">
+                                                            			<label style="font-size:22px;color:#333;margin-left:6px"><input name="choice"  id="yesCheck" type="radio" value=""  checked="checked" style="width:18px;height:18px"/><span style="margin-left:6px">通过审核</span></span></label> 
+																		<label style="font-size:22px;color:#333;margin-left:10px"><input name="choice" id="noCheck" type="radio" value="" style="width:18px;height:18px"/><span style="margin-left:6px">不通过</span> </label> 
+                                                            		</div>
+                                                            	</div>
+                                                            	<div>
+	                                                            	<div class="col-sm-4 control-label col-sm-group-div" >请输入审核意见</div>
+	                                                            	<div class="col-sm-8">
+	                                                             		<textarea class="form-control"   v-model="comment"  placeholder="请填写处理意见" rows="3"></textarea>
+	                                                            	</div>
+                                                            	</div>
+                                                           </div>
+                                                           <div style="text-align: center; margin-top: 15px">
+                                                               <a class="btn btn-xs btn-primary" onclick="materUp();">上一页</a>
+                                                               <a  class="btn btn-xs btn-primary"  onclick="showImg();">查看流程图</a>
+                                                               <a class="btn btn-xs btn-primary"  @click="getMsg">查看审核意见</a>
+																<!--   <a class="btn btn-xs btn-primary" v-bind:class="{hidden: isHidden }" el-button="noPassBtn"  onclick="submitDelegateApply();">通过审核</a> -->
+																<!--   	<a class="btn btn-xs btn-danger" v-bind:class="{hidden: isHidden }"  el-button="noPassBtn" onclick="noPass()">不通过</a> -->
+																<a class="btn btn-xs btn-primary" style="margin-left:10px"  v-bind:class="{hidden: isHidden }" onclick="submintCheck();">提交</a>
+                                                           </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--endprint-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.row -->
+
+                                </div>
+                                <!-- PAGE CONTENT ENDS -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+
+                    </div>
+                    <!-- /.page-content -->
+                </div>
+            </div>
+            <!-- /.main-content -->
+        </div>
+        
+        <!-- 审批人弹框start -->
+        <div class="page-content" style="padding-top: 0px; padding-bottom: 0px;">
+            <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <div class="modal fade" id="modal-container" role="dialog" aria-labelledby="myModalLabel"
+                            aria-hidden="true">
+                            <div style="margin: 2px auto; width: 80%">
+                                <iframe name="myiframe" style="border-radius: 6px; border: 1px solid #E0E0E0;"
+                                    frameborder="no" width="100%" height="520" src="oa_workflow_setNextNode"></iframe>
+                            </div>
+                        </div>
+
+
+                        <div class="modal fade" id="modal-start" role="dialog" aria-labelledby="myModalLabel"
+                            aria-hidden="true" data-backdrop="static">
+                            <div class="modal-dialog" style="width: 50%">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+
+
+                                        <div style="float: right; font-size: 18px;">
+                                            <a href="#" data-dismiss="modal" data-action="collapse">
+                                                <i class="ace-icon fa fa-close"></i>
+                                            </a>
+                                        </div>
+                                        <h4 class="modal-title" id="title">流程流转</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <ul class="select-box" id="taskInfoList">
+                                                </ul>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-12" style="text-align: center;">
+                                                    <input type="button" class="btn  btn-sm btn-primary"
+                                                        onclick="startProcess()" value="确定流转" /> <input type="button"
+                                                        class="btn  btn-sm btn-primary" data-dismiss="modal"
+                                                        value="关闭" />
+                                                    <div style="float: right;">
+                                                        <label
+                                                            style="position: absolute; right: 70px; top: 2px;">短信通知：</label><input
+                                                            id="id-button-borders" checked="checked" type="checkbox"
+                                                            class="ace ace-switch ace-switch-4" /> <span
+                                                            class="lbl"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="modal-person" role="dialog" aria-labelledby="myModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog" style="width: 60%">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div style="float: right; font-size: 18px;">
+                                            <a href="#" data-dismiss="modal" data-action="collapse">
+                                                <i class="ace-icon fa fa-close"></i>
+                                            </a>
+                                        </div>
+                                        <h4 class="modal-title" id="title">人员选择</h4>
+                                    </div>
+                                    <div class="" style="height: 500px;">
+                                        <iframe id="selectPerson" src=""
+                                            style="width: 100%; height: 100%; border: 0px;">
+                                            <!-- 由于有js冲突，采用iframe方式引入 -->
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--审批人弹框end  -->
+        <!-- 选择土地弹框start -->
+        <div class="container" id="landContainer">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <div class="modal fade" id="modals-container" role="dialog" aria-labelledby="myModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">×</button>
+                                    <h4 class="modal-title" id="title">
+                                        	选择土地
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form-horizontal">
+										<!-- 查询 -->
+										<div class="modal-body-inquire">
+											<span>宗地编号</span>
+											<input id="searchListName">
+											<span class="modal-body-inquire-core" id="inquireSelect" onclick="getInquire()">查询</span>
+                                    	</div>
+                                        <div class="widget-box">
+                                            <div class="widget-header"
+                                                style="background: #307ecc; font-size: 15px; color: #fff;">
+                                                <span class="ui-jqgrid-title">土地列表</span>
+                                            </div>
+                                            <div class="widget-body">
+                                                <div class="form-group">
+                                                    <div class="col-sm-12 fileupload">
+                                                        <div class="col-sm-10" style="width:98%;margin:4px">
+                                                            <div>
+                                                                <table class="table-border" id="bodyTable"z>
+                                                                	<tr style="font-weight:bold">
+                                                                		<th>序号</th>
+                                                                		<th>宗地标号</th>
+                                                                		<th>土地性质</th>
+                                                                		<th>面积</th>
+                                                                		<th>选择</th>
+                                                                	</tr>
+                                                                	<tr v-for="(item,index) of lands">
+                                                                		<td>{{index+1}}</td>
+                                                                		<td>{{item.boundaryCode}}</td>
+                                                                		<td>{{item.landCharacter}}</td>
+                                                                		<td>{{item.landArea}}</td>
+                                                                		<td><input name="checkName" type="checkbox" :value="item.id"></td>
+                                                                	</tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="clear"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div style="text-align: center;margin-top:10px">
+                                                <span>
+                                                    <!-- <input type="button" class="btn  btn-sm btn-primary"  data-dismiss="modal" value="确定"  onclick="getTableValue();" /> -->
+                                                    <input type="button" class="btn  btn-sm btn-primary"  data-dismiss="modal" @click="bindLans(delegateApply.id)" value="确定"/>
+                                                    &nbsp;&nbsp;<input type="button" class="btn  btn-sm btn-warning"  @click="reload" data-dismiss="modal" value="取消" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 选择土地弹框end -->
+        
+        <!-- 查看流程图start -->
+        <div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 column">
+				<div class="modal fade" id="modal-complete2" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static"  >
+					<div class="modal-dialog" style="width: 100%;">
+						<div class="modal-content" style="height:500px;">
+							<div class="modal-header">
+								<div style="float: right; font-size: 18px;">
+									<a href="#" data-dismiss="modal" data-action="collapse"> <i
+										class="ace-icon fa fa-close"></i></a>
+								</div>
+								<h4 class="modal-title" id="title">流程流转</h4>
+							</div>
+							<div class="modal-body">
+								<form class="form-horizontal" >
+									<iframe id="flowImg2" src="" style="width: 100%;height:340px; border: 0px;margin: auto;"></iframe>
+									<hr/>
+									<div class="form-group">
+										<div class="col-sm-12" style="text-align:center;">
+											<input type="button" class="btn  btn-sm btn-primary" data-dismiss="modal" value="关闭"/>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+        <!-- 查看流程图end -->
+        
+         <!-- 查看审核意见start -->
+        <div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 column">
+				<div class="modal fade" id="modal-complete3" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static"  >
+					<div class="modal-dialog" style="width: 100%;">
+						<div class="modal-content" style="height:500px;">
+						<div class="modal-header">
+								<div style="float: right; font-size: 18px;">
+									<a href="#" data-dismiss="modal" data-action="collapse"> <i
+										class="ace-icon fa fa-close"></i></a>
+								</div>
+								<h4 class="modal-title" id="title">审核意见</h4>
+							</div>
+							<div class="modal-body">
+								<form class="form-horizontal" >
+									 <div class="form-group">
+									   	<div class="col-sm-2 control-label">处理意见</div>
+									   	<div class="col-sm-10">
+									      <table class="table-border mb-20" style="text-align: center;">
+												<tr style="font-weight: bold;"><td>步骤</td><td>办理人员</td><td>办理时间</td><td>办理意见</td></tr>
+												<tr v-for="(comRes,index) in comRess">
+													<td>{{comRes.taskName}}</td><td>{{comRes.userName}}</td><td>{{comRes.time}}</td><td>{{comRes.fullMessage}}</td>
+												</tr>
+											</table>
+									    </div>
+									</div>		
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+        <!-- 查看审核意见end -->
+    </div>
+
+
+</body>
+<script src="${basePath}/common/theme/ace/js/jquery-2.1.4.min.js"></script>
+<script src="${basePath}/common/plugins/websocket/sockjs.min.js"></script>
+<script src="${basePath}/common/plugins/websocket/stomp.js"></script>
+<script src="${basePath}/oa/common/websocketCommon.js"></script>
+
+<script src="${basePath}/common/theme/ace/js/jquery-ui.custom.min.js"></script>
+<script src="${basePath}/common/theme/ace/js/jquery.ui.touch-punch.min.js"></script>
+<script src="${basePath}/common/theme/dateset/WdatePicker.js"></script>
+
+<script src="${basePath}/common/theme/ace/js/bootstrap.min.js"></script>
+<script src="${basePath}/admin/common.js"></script>
+<script src="${basePath}/common/mvvm/vue.js"></script>
+<script src="${basePath}/common/plugins/jqGrid/i18n/grid.locale-cn.js"></script>
+<script src="${basePath}/common/theme/ace/js/jquery.jqGrid.min.js"></script>
+<script src="${basePath}/common/plugins/gritter/js/jquery.gritter.min.js"></script>
+
+<script src="${basePath}/common/plugins/zTree/js/jquery.ztree.all.min.js"></script>
+<script src="${basePath}/common/theme/ace/js/ace-elements.min.js"></script>
+<script src="${basePath}/common/theme/ace/js/ace.min.js"></script>
+<script src="${basePath}/common/plugins/pop/plug-in.js"></script>
+<script src="${basePath}/common/theme/ace/js/moment.min.js"></script>
+
+
+<script src="${basePath}/admin/js/myvalidate.js"></script>
+<script src="${basePath}/oa/common/auth.js"></script>
+<script src="${basePath}/admin/comdictstools.js"></script>
+
+<script src="${basePath}/common/plugins/upload/js/jquery.fileupload.js"></script>
+<script src="${basePath}/common/plugins/upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${basePath}/common/plugins/upload/js/jquery.iframe-transport.js"></script>
+
+<script src="${basePath}/public/js/area.js"></script>
+<script src="${basePath}/public/js/delegation.js"></script>
+<script src="${basePath}/business/accept/opentransferaccept.js"></script>
+<script src="${basePath}/business/oa/dealwith-events.js?v=201901"></script>
+<script src="${basePath}/business/oa/headerbutton-events.js?v=201901"></script>
+
+</html>
